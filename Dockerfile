@@ -1,5 +1,8 @@
 FROM php:alpine
 
+# Update APK
+
+RUN apk update
 # Install dev dependencies
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS \
@@ -26,7 +29,11 @@ RUN apk add --no-cache \
     nodejs-npm \
     openssh-client \
     postgresql-libs \
-    rsync
+    rsync \
+	python \
+	python-dev \
+	py-pip \
+	ca-certificates
 
 # Install PECL and PEAR extensions
 RUN pecl install \
@@ -53,6 +60,9 @@ RUN docker-php-ext-install \
     zip \
     bcmath
 
+# Install awsebcli
+RUN pip install --upgrade pip
+RUN pip install awsebcli --upgrade --ignore-installed
 # Install composer
 RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
